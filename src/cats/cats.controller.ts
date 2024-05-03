@@ -1,32 +1,44 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { Roles } from '../common/decorators/roles.decorator';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
+import { Body, Controller, Get, Param, Post, Delete, Patch, UseGuards } from '@nestjs/common';
 import { CatsService } from './cats.service';
-import { CreateCatDto } from './dto/create-cat.dto';
-import { Cat } from './interfaces/cat.interface';
+import { CatDto } from './dto/cat.dto';
+import { JwtGuard } from '../auth/guard';
 
-@UseGuards(RolesGuard)
 @Controller('cats')
 export class CatsController {
-  constructor(private readonly catsService: CatsService) {}
+  constructor(private catsService: CatsService) { }
 
-  @Post()
-  @Roles(['admin'])
-  async create(@Body() createCatDto: CreateCatDto) {
-    this.catsService.create(createCatDto);
+  //Add Cat
+  @UseGuards(JwtGuard)
+  @Post('add')
+  async addCat(@Body() CatDto: CatDto) {
+    return this.catsService.addCat(CatDto);
   }
 
+  //Delete Cat
+  @UseGuards(JwtGuard)
+  @Delete('delete/:id')
+  async deleteCatById(@Param('id') id: string) {
+    return this.catsService.deleteCatById(parseInt(id));
+  }
+
+  //Get Cats
+  @UseGuards(JwtGuard)
   @Get()
-  async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
+  async getCats() {
+    return this.catsService.getCats();
   }
 
-  @Get(':id')
-  findOne(
-    @Param('id', new ParseIntPipe())
-    id: number,
-  ) {
-    // get by ID logic
+  //Get Cat By Id
+  @UseGuards(JwtGuard)
+  @Get('/:id')
+  getCatById(@Param('id') id: string) {
+    return this.catsService.getCatById(parseInt(id));
+  }
+
+  //Update Cat By Id
+  @UseGuards(JwtGuard)
+  @Patch('update/:id')
+  updateCat(@Param('id') id: string, @Body() dto: CatDto) {
+    return this.catsService.updateCat(parseInt(id), dto);
   }
 }

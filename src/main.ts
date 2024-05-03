@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-const validationPipeService = require('@nestts/validation-pipes');
+import * as validationPipeService from '@nestts/validation-pipes';
 
 async function bootstrap() {
   try {
